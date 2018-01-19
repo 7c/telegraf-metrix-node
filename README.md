@@ -2,12 +2,13 @@
 
 Supports telegraf line protocol and sends metrics over udp (for now). Line protocol uses nano second precisious timestamp, we will let this stamping telegraf for now
 
-I preper UDP protocol because php is stateless and not able to run async functions natively. I do not want to block my operations with TCP which has a handshake and many checks.
+I preper UDP protocol because its fault-tolera and not able to run async functions natively. I do not want to block my operations with TCP which has a handshake and many checks.
 
 Planning to support TCP by next versions. Also maintaining PHP version of metrix
 
 ## Install
 
+npm install telegraf-metrix-node --save
 
 ## Telegraf Configuration
 Enable [[inputs.socket_listener]] inside telegraf.conf with a service address like udp://:8094 to enable UDP from 0.0.0.0. You may also choose to activate UDP for 127.0.0.1 which is recommended way
