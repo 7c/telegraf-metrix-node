@@ -1,6 +1,6 @@
 var Metrix = require("./index.js");
 
-var metrix = new Metrix("udp://10.211.55.9",true);
+var metrix = new Metrix("udp://127.0.0.1:8094",true);
 
 
 function tick() {

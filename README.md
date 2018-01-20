@@ -17,7 +17,7 @@ Enable [[inputs.socket_listener]] inside telegraf.conf with a service address li
 - default target is udp://127.0.0.1:8094
 - scheme must be defined if default value is not taken
 - target structure is scheme://host:port
-- measurement name: ^[a-zA-Z0-9_, .]+$
+- measurement name: ^[a-zA-Z0-9_, .-]+$
 - tag keys, tag values: ^[a-zA-Z0-9_,. =]+$
 - tags are optional
 - fields are optional

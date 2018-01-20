@@ -6,9 +6,10 @@ const dgramClient = dgram.createSocket("udp4");
 class Metrix {
   constructor(target="udp://127.0.0.1", debug = false) {
     var parsed = url.parse(target);
+    // console.log(parsed);
     if (!parsed.protocol || parsed.protocol !== "udp:")
       throw new Error("Invalid protocol by target");
-    parsed.host = parsed.host || "127.0.0.1";
+    parsed.host = parsed.hostname || "127.0.0.1";
     parsed.port = parsed.port || 8094;
     this.target = parsed;
     this.debug = debug;
