@@ -24,7 +24,7 @@ Enable [[inputs.socket_listener]] inside telegraf.conf with a service address li
 - time will be stamped from telegraf (for now)
 
 ```
-var Metrix = require("./index.js");
+var Metrix = require("telegraf-metrix-node");
 var metrix = new Metrix("udp://127.0.0.1:8094"); // you could also keep it empty for default
 
 function tick() {

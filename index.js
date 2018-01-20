@@ -23,7 +23,7 @@ class Metrix {
     // this.l(measurement,tags,fields)
     // console.log(">",typeof fields,fields);
     // measurement must be a string
-    if (measurement && measurement.search(/[^a-zA-Z0-9_, .]/) > -1) {
+    if (measurement && measurement.search(/[^a-zA-Z0-9_, .-]/) > -1) {
       this.l("invalid measurement", measurement);
       return false;
     }
