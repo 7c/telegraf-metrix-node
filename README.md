@@ -43,7 +43,7 @@ tick();
 
 
 ## Pulse Feature
-beta pulse feature is implemented. Pulse will send hearthbeats to telegraf, this way you can detect if an app or part of an app has stopped working. You can either use .pulse() method or .pulseAuto() to make it automatic. Please do not call pulseAuto more then 10 times. .pulse() is designed to be called inside your loops to send manual signals. Pulse supports throttling to avoid sending hearthbeats more then necessary. Default value is 1000 (ms) which will send the HB only every 1000ms even though you send it from a fast loop.
+beta pulse feature is implemented. Pulse will send heartbeats to telegraf, this way you can detect if an app or part of an app has stopped working. You can either use .pulse() method or .pulseAuto() to make it automatic. Please do not call pulseAuto more then 10 times. .pulse() is designed to be called inside your loops to send manual signals. Pulse supports throttling to avoid sending heartbeats more then necessary. Default value is 1000 (ms) which will send the HB only every 1000ms even though you send it from a fast loop.
 
 ```
 metrix.pulseAuto('myappPulse',1500);

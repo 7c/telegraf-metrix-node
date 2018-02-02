@@ -44,7 +44,7 @@ class Metrix {
         tags.appVersion= this.package.version;
       }
       this.pulseTimes[section]=Date.now();
-      return this.send('pulse',tags,{hearthbeat:1, lastSignal: Math.round(Date.now()/1000,0)});
+      return this.send('pulse',tags,{heartbeat:1, lastSignal: Math.round(Date.now()/1000,0)});
     }
     return true;
   }
