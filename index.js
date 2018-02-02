@@ -1,3 +1,5 @@
+const path = require('path');
+const fs = require('fs');
 const url = require("url");
 const dgram = require("dgram");
 // const buffer = require('buffer');
@@ -5,24 +7,61 @@ const dgramClient = dgram.createSocket("udp4");
 
 class Metrix {
   constructor(target="udp://127.0.0.1", debug = false) {
-    var parsed = url.parse(target);
-    // console.log(parsed);
+    var parsed = url.parse(target);    
     if (!parsed.protocol || parsed.protocol !== "udp:")
       throw new Error("Invalid protocol by target");
     parsed.host = parsed.hostname || "127.0.0.1";
     parsed.port = parsed.port || 8094;
     this.target = parsed;
     this.debug = debug;
-    // console.log(this.target);
+    this.package = false;
+    this.pulseTimes={};
+    if (fs.existsSync(process.cwd()))
+    {
+      // try to find package.json file
+      var pj = path.join(process.cwd(),'package.json');
+      if (fs.existsSync(pj)) this.package = require(pj);
+    }
+    
   }
 
   l(...args) {
     if (this.debug) console.log(...args);
   }
 
+  pulseAuto(section,timeout=1000) {
+    setInterval(()=>{
+      this.pulse(section,timeout);
+    },timeout)
+  }
+
+  pulse(section,throttle=1000) {
+    if (!this.pulseTimes[section] || Date.now()>this.pulseTimes[section]+throttle)
+    {
+      var tags = {cwd:process.cwd(),section};
+      if (this.package) {
+        tags.appName = this.package.name;
+        tags.appVersion= this.package.version;
+      }
+      this.pulseTimes[section]=Date.now();
+      return this.send('pulse',tags,{hearthbeat:1, lastSignal: Math.round(Date.now()/1000,0)});
+    }
+    return true;
+  }
+
+  send(measurement, tags, fields) {
+    var l = this.line(measurement, tags, fields);
+    if (l!==false) {
+        dgramClient.send(Buffer.from(l),this.target.port,this.target.host,(err)=>{
+        // lets ignore all kind of errors to be more resilient
+        });
+        
+    }
+    return l;
+  }
+
+
   line(measurement, tags = null, fields = null) {
-    // this.l(measurement,tags,fields)
-    // console.log(">",typeof fields,fields);
     // measurement must be a string
     if (measurement && measurement.search(/[^a-zA-Z0-9_, .-]/) > -1) {
       this.l("invalid measurement", measurement);
@@ -46,14 +85,14 @@ class Metrix {
       }
     }
 
+
+    
     // check fields
     var tmpFields = [];
     var fieldsPart = "";
     if (fields!==null)
     {
-        // console.log(fields);
         if (typeof fields==='number' || typeof fields==='string') fields={value:fields};
-        // console.log(fields);
         if (fields && typeof fields === "object") {
         for (var ky in fields) {
             if (ky.search(/[^a-zA-Z0-9_, .=]/) > -1) {
@@ -72,7 +111,6 @@ class Metrix {
             else if (typeof vl1 === "number")
             tmpFields.push(ky1 + "=" + vl1);
             else throw new Error("Unknown field value type by field", ky);
-            // console.log(tmpFields);
         }
         } else throw new Error("Unknown fields type",typeof fields);
         // } else if (typeof fields === "number") tmpFields.push("value="+fields);
@@ -86,16 +124,7 @@ class Metrix {
     return measurement+tagsPart+fieldsPart;
   }
 
-  send(measurement, tags, fields) {
-    var l = this.line(measurement, tags, fields);
-    if (l!==false) {
-        dgramClient.send(Buffer.from(l),this.target.port,this.target.host,(err)=>{
-        // lets ignore all kind of errors to be more resilient
-        });
-        
-    }
-    return l;
-  }
+
 }
 
 module.exports = Metrix;
