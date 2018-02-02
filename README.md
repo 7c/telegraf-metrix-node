@@ -25,7 +25,7 @@ Enable [[inputs.socket_listener]] inside telegraf.conf with a service address li
 
 ```
 var Metrix = require("telegraf-metrix-node");
-var metrix = new Metrix("udp://127.0.0.1:8094"); // you could also keep it empty for default
+var metrix = new Metrix("udp://127.0.0.1:8094",'myapp'); 
 
 function tick() {
     setTimeout(()=>{
@@ -44,6 +44,8 @@ tick();
 
 ## Pulse Feature
 beta pulse feature is implemented. Pulse will send heartbeats to telegraf, this way you can detect if an app or part of an app has stopped working. You can either use .pulse() method or .pulseAuto() to make it automatic. Please do not call pulseAuto more then 10 times. .pulse() is designed to be called inside your loops to send manual signals. Pulse supports throttling to avoid sending heartbeats more then necessary. Default value is 1000 (ms) which will send the HB only every 1000ms even though you send it from a fast loop.
+
+I recommend using AppName from the constructor `constructor(target="udp://127.0.0.1", appName=false, appVersion=false, debug = false)` which will be attached to the heartbeat automatically. If you do not specify appName it will try to find corresponding package.json to the host app but most of the time it might fail.
 
 ```
 metrix.pulseAuto('myappPulse',1500);

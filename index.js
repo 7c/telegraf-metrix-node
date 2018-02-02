@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const url = require("url");
 const dgram = require("dgram");
 // const buffer = require('buffer');
@@ -40,7 +41,7 @@ class Metrix {
   pulse(section,throttle=1000) {
     if (!this.pulseTimes[section] || Date.now()>this.pulseTimes[section]+throttle)
     {
-      var tags = {section};
+      var tags = {section, host:os.hostname()};
       if (this.package) {
         tags.appName = this.package.name;
         tags.appVersion= this.package.version;
