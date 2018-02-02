@@ -6,7 +6,7 @@ const dgram = require("dgram");
 const dgramClient = dgram.createSocket("udp4");
 
 class Metrix {
-  constructor(target="udp://127.0.0.1", debug = false) {
+  constructor(target="udp://127.0.0.1", appName=false, appVersion=false, debug = false) {
     var parsed = url.parse(target);    
     if (!parsed.protocol || parsed.protocol !== "udp:")
       throw new Error("Invalid protocol by target");
@@ -15,6 +15,8 @@ class Metrix {
     this.target = parsed;
     this.debug = debug;
     this.package = false;
+    this.appName = appName;
+    this.appVersion = appVersion;
     this.pulseTimes={};
     if (fs.existsSync(process.cwd()))
     {
@@ -38,13 +40,17 @@ class Metrix {
   pulse(section,throttle=1000) {
     if (!this.pulseTimes[section] || Date.now()>this.pulseTimes[section]+throttle)
     {
-      var tags = {cwd:process.cwd(),section};
+      var tags = {section};
       if (this.package) {
         tags.appName = this.package.name;
         tags.appVersion= this.package.version;
       }
+
+      if (this.appName) tags.appName = this.appName;
+      if (this.appVersion) tags.appVersion = this.appVersion;
+
       this.pulseTimes[section]=Date.now();
-      return this.send('pulse',tags,{heartbeat:1, lastSignal: Math.round(Date.now()/1000,0)});
+      return this.send('pulse',tags,{heartbeat:1});
     }
     return true;
   }

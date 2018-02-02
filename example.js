@@ -1,11 +1,12 @@
 var Metrix = require("./index.js");
 
-var metrix = new Metrix("udp://10.211.55.9:8094",true);
+var metrix = new Metrix("udp://10.211.55.9:8094");
 
-metrix.pulseAuto('random-generator-script',1500);
+metrix.pulseAuto('random-generator-script-auto',1500);
 
 function tick() {
 
+    console.log(metrix.pulse('random-generator-script-inside',1500));
     setTimeout(()=>{
         console.log("Sending >",
         metrix.send("Random Generator",{type:"random"},{
@@ -14,7 +15,7 @@ function tick() {
         })
         );
         tick();
-    },1000);
+    },500);
 }
 
 tick();
