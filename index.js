@@ -1,19 +1,19 @@
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
-const url = require("url");
 const dgram = require("dgram");
-// const buffer = require('buffer');
 const dgramClient = dgram.createSocket("udp4");
 
 class Metrix {
   constructor(telegrafHost = "udp://127.0.0.1", appName = false, appVersion = false, debug = false) {
-    var parsed = url.parse(telegrafHost);
-    if (!parsed.protocol || parsed.protocol !== "udp:")
+    const parsed = new URL(telegrafHost);
+    if (parsed.protocol !== "udp:") 
       throw new Error("Invalid protocol by target");
-    parsed.host = parsed.hostname || "127.0.0.1";
-    parsed.port = parsed.port || 8094;
-    this.target = parsed;
+
+    this.target = {
+      host: parsed.hostname || "127.0.0.1",
+      port: parsed.port ? Number(parsed.port) : 8094
+    };
     this.debug = debug;
     this.package = false;
     this.appName = appName;
@@ -25,13 +25,13 @@ class Metrix {
       if (fs.existsSync(pj)) this.package = require(pj);
     }
 
-    // to avoid it binding to 0.0.0.0:<randomport>  - we do not want to have the responsess
-    dgramClient.bind({
-      address: '127.0.0.1',
-      port: 0,
-    }, () => {
-      // console.log(`Server is listening at 127.0.0.1`);
-    });
+    // // to avoid it binding to 0.0.0.0:<randomport>  - we do not want to have the responsess
+    // dgramClient.bind({
+    //   address: '127.0.0.1',
+    //   port: 0,
+    // }, () => {
+    //   // console.log(`Server is listening at 127.0.0.1`);
+    // });
 
   }
 
@@ -72,7 +72,6 @@ class Metrix {
     }
     return l;
   }
-
 
   line(measurement, tags = null, fields = null, timestamp = null) {
     // measurement must be a string
@@ -136,8 +135,6 @@ class Metrix {
 
     return measurement + tagsPart + fieldsPart + (timestamp !== null ? (' ' + timestamp) : '');
   }
-
-
 }
 
 module.exports = Metrix;
