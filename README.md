@@ -6,6 +6,8 @@ I preper UDP protocol because its fault-tolerant, I do not want to block my oper
 
 Planning to support TCP by next versions. Also maintaining PHP version of metrix
 
+Written in TypeScript and ships its own type declarations. Works the same in CommonJS, ESM, and TypeScript projects.
+
 ## Install
 
 npm install telegraf-metrix-node --save
@@ -22,6 +24,20 @@ Enable [[inputs.socket_listener]] inside telegraf.conf with a service address li
 - tags are optional
 - fields are optional
 - time will be stamped from telegraf (for now)
+
+CommonJS:
+
+```
+const Metrix = require("telegraf-metrix-node");
+const metrix = new Metrix("udp://127.0.0.1:8094", "myapp");
+```
+
+ESM / TypeScript:
+
+```ts
+import Metrix from "telegraf-metrix-node";
+const metrix = new Metrix("udp://127.0.0.1:8094", "myapp");
+```
 
 ```
 var Metrix = require("telegraf-metrix-node");
@@ -53,6 +69,19 @@ while(true) {
     metrix.pulse('mainloop',2000);
 }
 ```
+
+## Development
+
+Sources live in `src/` (TypeScript) and compile to `dist/` (CommonJS JS + `.d.ts`).
+
+```
+npm install        # also builds via the prepare hook
+npm run build      # compile src/ -> dist/
+npm test           # run test/test.ts
+npm run example    # run examples/example.ts
+```
+
+Only `dist/` is published. `npm publish` runs `prepublishOnly`, which rebuilds and tests first.
 
 ## Line protocol details
 https://docs.influxdata.com/influxdb/v0.9/write_protocols/line/
